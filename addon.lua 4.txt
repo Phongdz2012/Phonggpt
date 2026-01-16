@@ -1,0 +1,107 @@
+-- Khởi tạo UI
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "🛡️ EXPERIMENTAL MULTI-HUB",
+   LoadingTitle = "Đang tải hệ thống thử nghiệm...",
+   LoadingSubtitle = "By Phong",
+})
+
+-- Biến cấu hình (Settings)
+local Settings = {
+    AutoFarm = false,
+    FarmSpeed = 0.5,
+    WalkSpeed = 16,
+    JumpPower = 50,
+    ESPEnabled = false
+}
+
+--- [TAB 1: TỰ ĐỘNG (FARMING)] ---
+local FarmTab = Window:CreateTab("Auto Farm", 4483362458)
+
+FarmTab:CreateToggle({
+   Name = "Bật Auto Farm (Test Teleport)",
+   CurrentValue = false,
+   Callback = function(Value)
+      Settings.AutoFarm = Value
+      if Value then
+          -- Vòng lặp Farm chạy ngầm
+          task.spawn(function()
+              while Settings.AutoFarm do
+                  -- 1. Giả lập dịch chuyển đến quái vật/vật phẩm
+                  -- Thay 'TargetPart' bằng tên vật phẩm trong game của bạn
+                  pcall(function()
+                      local target = game.Workspace:FindFirstChild("DropItem") 
+                      if target then
+                          game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = target.CFrame
+                      end
+                  end)
+                  
+                  -- 2. Giả lập Spam Remote tấn công
+                  local Remote = game.ReplicatedStorage:FindFirstChild("MainEvent")
+                  if Remote then
+                      Remote:FireServer("Attack", "Sword")
+                  end
+                  
+                  task.wait(Settings.FarmSpeed)
+              end
+          end)
+      end
+   end,
+})
+
+FarmTab:CreateSlider({
+   Name = "Tốc độ Farm (Delay)",
+   Range = {0.1, 5},
+   Increment = 0.1,
+   CurrentValue = 0.5,
+   Callback = function(Value)
+      Settings.FarmSpeed = Value
+   end,
+})
+
+--- [TAB 2: NHÂN VẬT (MOVEMENT)] ---
+local MoveTab = Window:CreateTab("Movement", 4483362458)
+
+MoveTab:CreateSlider({
+   Name = "Tốc độ chạy (WalkSpeed)",
+   Range = {16, 500},
+   Increment = 10,
+   CurrentValue = 16,
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+   end,
+})
+
+MoveTab:CreateSlider({
+   Name = "Độ cao nhảy (JumpPower)",
+   Range = {50, 500},
+   Increment = 10,
+   CurrentValue = 50,
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+   end,
+})
+
+--- [TAB 3: HIỂN THỊ (VISUALS)] ---
+local VisualTab = Window:CreateTab("Visuals", 4483362458)
+
+VisualTab:CreateButton({
+   Name = "Bật ESP (X-Ray người chơi)",
+   Callback = function()
+       -- Logic ESP cơ bản để test khả năng đọc bộ nhớ (Memory Reading)
+       for _, v in pairs(game.Players:GetPlayers()) do
+           if v ~= game.Players.LocalPlayer and v.Character then
+               local Highlight = Instance.new("Highlight")
+               Highlight.Parent = v.Character
+               Highlight.FillColor = Color3.fromRGB(255, 0, 0)
+           end
+       end
+   end,
+})
+
+Rayfield:Notify({
+   Title = "Thank for use script!",
+   Content = "PhongIDK load done.",
+   Duration = 5,
+})
