@@ -1,0 +1,37 @@
+-- PHONGDZ HUB (TEST MODE)
+-- Dùng cho game DEV / TEST anti-hack & animation
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- CONFIG
+local AUTO_FARM = true
+local FARM_RADIUS = 80
+local DAMAGE = 9999
+local EXP_GAIN = 50
+
+-- UI (đơn giản)
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+gui.Name = "PhongDZHub"
+
+local label = Instance.new("TextLabel", gui)
+label.Size = UDim2.fromScale(0.3, 0.08)
+label.Position = UDim2.fromScale(0.35, 0.05)
+label.Text = "🔥 PHONGDZ HUB – TEST MODE"
+label.BackgroundColor3 = Color3.fromRGB(20,20,20)
+label.TextColor3 = Color3.fromRGB(255,100,100)
+label.TextScaled = true
+
+-- AUTO FARM LOOP
+RunService.Heartbeat:Connect(function()
+	if not AUTO_FARM then return end
+	if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+
+	for _, npc in pairs(workspace:GetChildren()) do
+		if npc ~= character and npc:FindFirstChild("Humanoid") and npc:FindFirstChild("HumanoidRootPart") then
+			local dist = (npc.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
+			if dist <= FARM_RADIUS then
